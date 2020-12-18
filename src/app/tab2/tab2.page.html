@@ -48,9 +48,9 @@
                 <ion-row  >
                   <ion-col *ngFor="let photo of photoService.photos;index as position" size='3'>
                     <ion-img [src]="photo.webviewPath" (click)="openPreview(photo.filepath)" tappable></ion-img>
-                    <!-- <ion-button (click) = "deletePhoto(photo)">
+                    <ion-button (click) = "showActionSheet(photo,position)">
                       <ion-icon name="trash"></ion-icon>
-                    </ion-button> -->
+                    </ion-button>
                   </ion-col>
                 </ion-row>
               </ion-grid>

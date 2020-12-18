@@ -182,27 +182,24 @@ export class PhotoService {
   //   }).then(modal=> modal.present());
   // }
 
-  // public async deletePhoto(photo: { filepath: any; }){
-  //   const photoList = await Storage.get({ key: this.PHOTO_STORAGE});
-  //   this.photos = JSON.parse(photoList.value) || [];
-  //   //remove this photo from the Photos 
-  //   const delPhoto = async (photo:Photo)=>{
-  //     const newPhotos = this.photos.filter(p=>p.filepath !== photo.filepath);
+  public async deletePicture(photo:Photo, position:number){
+    //remove this photo from the Photos reference data array
+    this.photos.splice(position,1);
 
-  //     //update photos array cache by overwritinig the existing photo array
-  //     set(this.PHOTO_STORAGE,JSON.stringify(newPhotos));
-
-  //   }
-  //   const deleteFile = await Filesystem.deleteFile({
-  //     path: photo.filepath,
-  //     directory: FilesystemDirectory.Data
-  //   });
-    
-  // }
-}
-
-
-
+    //update photo array cache by overwriting the photo array
+    Storage.set({
+      key: this.PHOTO_STORAGE,
+      value: JSON.stringify(this.photos)
+    });
+    //delete photo file from filesystme
+    const filename = photo.filepath.substr(photo.filepath.lastIndexOf('/')+1);
+    await Filesystem.deleteFile({
+      path: filename,
+      directory: FilesystemDirectory.Data
+    });
+    }
+  }
+ 
 export interface Photo{
   filepath: string;
   webviewPath: string;

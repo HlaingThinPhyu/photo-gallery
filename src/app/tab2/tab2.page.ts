@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
-import{ PhotoService } from '../services/photo.service';
-import { ImageModalPage } from '../image-modal/image-modal.page';
-import { Filesystem, FilesystemDirectory } from '@capacitor/core';
+import{ Photo,PhotoService } from '../services/photo.service';
+import{ ActionSheetController }from '@ionic/angular';
 
 @Component({
   selector: 'app-tab2',
@@ -10,7 +9,7 @@ import { Filesystem, FilesystemDirectory } from '@capacitor/core';
 })
 export class Tab2Page {
 
-  constructor(public photoService: PhotoService) {}
+  constructor(public photoService: PhotoService, public actionSheetController: ActionSheetController) {}
 
   addPhotoToGallery(){
     this.photoService.addNewToGallery();
@@ -22,8 +21,26 @@ export class Tab2Page {
   openPreview(img){
     this.photoService.previewPhoto(img);
   }
-  // deletePhoto(photo){
-  //   this.photoService.deletePhoto(photo);
-  // }
+
+  public async showActionSheet(photo: Photo, position: number){
+    const actionSheet = await this.actionSheetController.create({
+      header: photo.filepath,
+      buttons: [{
+        text: 'Delete',
+        role: 'destructive',
+        icon: 'trash',
+        handler: ()=> {
+          this.photoService.deletePicture(photo,position);
+        }
+      },{
+        text:'Cancel',
+        icon: 'close',
+        role: 'cancel',
+        handler:()=>{}
+      }]
+    });
+    await actionSheet.present();
+  }
+  
 
 }
