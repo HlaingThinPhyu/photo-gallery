@@ -4,6 +4,9 @@ import { Plugins, CameraResultType, Capacitor, FilesystemDirectory, CameraPhoto,
 import { ImagePicker } from '@ionic-native/image-picker/ngx';
 import { rejects } from 'assert';
 import{ Platform } from '@ionic/angular';
+import { ImageModalPage } from '../image-modal/image-modal.page';
+import { ModalController } from '@ionic/angular';
+
 
 const { Camera, Filesystem, Storage }= Plugins;
 
@@ -21,9 +24,14 @@ export class PhotoService {
   private PHOTO_STORAGE: string = "photos";
   private platform: Platform;
 
-  constructor(platform: Platform, private imagePicker: ImagePicker) {
+  sliderOpts = {
+    zoom: false,
+    slidesPerView : 1.5,
+    centeredSlides: true,
+    spaceBetween: 20,
+  };
+  constructor(platform: Platform, private modalController:ModalController) {
     this.platform = platform;
-    this.imagePicker = imagePicker;
    }
 
   public async addNewToGallery(){
@@ -124,6 +132,7 @@ export class PhotoService {
      
       //display photo by reading into base64 format
       for(let photo of this.photos){
+        console.log("**** LoadSaved *** "+photo.filepath);
         const readFile = await Filesystem.readFile({
           path: photo.filepath,
           directory: FilesystemDirectory.Data
@@ -131,9 +140,27 @@ export class PhotoService {
 
         //for web platform only: load as base64 data
         photo.webviewPath = `data:image/jpeg;base64, ${readFile.data}`;
-        console.log("PHOTO webviewpath:: "+ photo.filepath);
+        console.log("PHOTO webviewpath in loadSaved():: "+ photo.webviewPath);
       } 
     }
+  }
+
+  // preview photo
+  public async previewPhoto(img){
+    const readFile = await Filesystem.readFile({
+      path: img,
+      directory: FilesystemDirectory.Data
+    });
+
+    //for web platform only: load as base64 data
+    let photoPath = `data:image/jpeg;base64, ${readFile.data}`;
+    console.log(" ### photoPath ### "+ photoPath);
+    this.modalController.create({
+      component: ImageModalPage,
+      componentProps: {
+        photoPath :photoPath
+      }
+    }).then(modal=> modal.present());
   }
   // public async deletePhoto(photo: { filepath: any; }){
   //   const photoList = await Storage.get({ key: this.PHOTO_STORAGE});
@@ -153,6 +180,8 @@ export class PhotoService {
     
   // }
 }
+
+
 
 export interface Photo{
   filepath: string;

@@ -13,22 +13,21 @@ export class ImageModalPage implements OnInit {
 
   sliderOpts = {
     zoom: {
-      maxRatio: 3
+      maxRatio: 5
     }
   };
 
   constructor(private navParams : NavParams,private modalController: ModalController) { }
 
   ngOnInit() {
-    this.img = this.navParams.get('img');
+    this.img = this.navParams.get('photoPath');
     console.log("CLICKED IMG *** "+ this.img);
   }
 
   zoom(zoomIn: boolean){
     console.log(zoomIn);
     let zoom = this.slider.nativeElement.swiper.zoom;
-    
-    console.log(zoom);
+   console.log(zoom);
     if(zoomIn){
       zoom.in();
     } else{

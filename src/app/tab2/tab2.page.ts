@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { ModalController } from '@ionic/angular';
 import{ PhotoService } from '../services/photo.service';
 import { ImageModalPage } from '../image-modal/image-modal.page';
+import { Filesystem, FilesystemDirectory } from '@capacitor/core';
 
 @Component({
   selector: 'app-tab2',
@@ -10,14 +10,7 @@ import { ImageModalPage } from '../image-modal/image-modal.page';
 })
 export class Tab2Page {
 
-  sliderOpts = {
-    zoom: false,
-    slidesPerView : 1.5,
-    centeredSlides: true,
-    spaceBetween: 20,
-  };
-
-  constructor(public photoService: PhotoService, private modalController:ModalController) {}
+  constructor(public photoService: PhotoService) {}
 
   addPhotoToGallery(){
     this.photoService.addNewToGallery();
@@ -27,13 +20,7 @@ export class Tab2Page {
     await this.photoService.loadSaved();
   }
   openPreview(img){
-    console.log("OPEN PREVIEW *** "+ img);
-    this.modalController.create({
-      component: ImageModalPage,
-      componentProps: {
-        img: img
-      }
-    }).then(modal=> modal.present());
+    this.photoService.previewPhoto(img);
   }
   // deletePhoto(photo){
   //   this.photoService.deletePhoto(photo);
