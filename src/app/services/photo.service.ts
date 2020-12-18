@@ -4,9 +4,9 @@ import { Plugins, CameraResultType, Capacitor, FilesystemDirectory, CameraPhoto,
 import { ImagePicker } from '@ionic-native/image-picker/ngx';
 import { rejects } from 'assert';
 import{ Platform } from '@ionic/angular';
-import { ImageModalPage } from '../image-modal/image-modal.page';
+//import { ImageModalPage } from '../image-modal/image-modal.page';
 import { ModalController } from '@ionic/angular';
-
+import { ViewerModalComponent} from 'ngx-ionic-image-viewer'; //using ngx-ionic-image-viewer
 
 const { Camera, Filesystem, Storage }= Plugins;
 
@@ -49,8 +49,6 @@ export class PhotoService {
     //   quality: 50,
     //   //outputType: 0
     // };
-    
-    
     // this.imagePicker.getPictures(this.options).then(async (results)=>{
     //   for(var i =0;i< results.length;i++){
         
@@ -145,23 +143,45 @@ export class PhotoService {
     }
   }
 
-  // preview photo
+  // open preview image using ngx-ionic-image-viewer way
   public async previewPhoto(img){
     const readFile = await Filesystem.readFile({
-      path: img,
-      directory: FilesystemDirectory.Data
-    });
-
+          path: img,
+          directory: FilesystemDirectory.Data
+        });
+    
     //for web platform only: load as base64 data
     let photoPath = `data:image/jpeg;base64, ${readFile.data}`;
-    console.log(" ### photoPath ### "+ photoPath);
-    this.modalController.create({
-      component: ImageModalPage,
+    console.log("### photoPath :::" + photoPath);
+    const modal = await this.modalController.create({
+      component: ViewerModalComponent,
       componentProps: {
-        photoPath :photoPath
-      }
-    }).then(modal=> modal.present());
+        src: photoPath
+      },
+      cssClass: 'ion-img-viewer',
+      keyboardClose: true,
+      showBackdrop: true
+    });
+    return await modal.present();
   }
+  // preview photo using image-modal folder way
+  // public async previewPhoto(img){
+  //   const readFile = await Filesystem.readFile({
+  //     path: img,
+  //     directory: FilesystemDirectory.Data
+  //   });
+
+  //   //for web platform only: load as base64 data
+  //   let photoPath = `data:image/jpeg;base64, ${readFile.data}`;
+  //   console.log(" ### photoPath ### "+ photoPath);
+  //   this.modalController.create({
+  //     component: ImageModalPage,
+  //     componentProps: {
+  //       photoPath :photoPath
+  //     }
+  //   }).then(modal=> modal.present());
+  // }
+
   // public async deletePhoto(photo: { filepath: any; }){
   //   const photoList = await Storage.get({ key: this.PHOTO_STORAGE});
   //   this.photos = JSON.parse(photoList.value) || [];
